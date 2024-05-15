@@ -40,37 +40,27 @@ EOF
 
 # Apply sysctl params without reboot
 sudo sysctl --system
+#unistall previous docker
+for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
 
- tar Cxzvf /usr/local containerd-1.6.2-linux-amd64.tar.gz
-bin/
-bin/containerd-shim-runc-v2
-bin/containerd-shim
-bin/ctr
-bin/containerd-shim-runc-v1
-bin/containerd
-bin/containerd-stress
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-install -m 755 runc.amd64 /usr/local/sbin/runc
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
 
-mkdir -p /opt/cni/bin
-tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
-./
-./macvlan
-./static
-./vlan
-./portmap
-./host-local
-./vrf
-./bridge
-./tuning
-./firewall
-./host-device
-./sbr
-./loopback
-./dhcp
-./ptp
-./ipvlan
-./bandwidth
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+
+
 
 #Download the latest release with the command:
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -95,7 +85,7 @@ curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 sudo apt-get update
-sudo apt-get install -y kubelet kubeadm kubectl
-sudo apt-mark hold kubelet kubeadm kubectl
+sudo apt-get install -y kubelet kubeadm
+sudo apt-mark hold kubelet kubeadm 
 
 sudo systemctl enable --now kubelet
