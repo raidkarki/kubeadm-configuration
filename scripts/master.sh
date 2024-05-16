@@ -6,8 +6,8 @@
 set -euxo pipefail
 
 
-kubeadm config images list
-kubeadm config images pull
+sudo kubeadm config images list
+sudo kubeadm config images pull
 
 
 PUBLIC_IP_ACCESS="true"
