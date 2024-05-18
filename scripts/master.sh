@@ -25,7 +25,7 @@ if [[ "$PUBLIC_IP_ACCESS" == "false" ]]; then
 elif [[ "$PUBLIC_IP_ACCESS" == "true" ]]; then
 
     MASTER_PUBLIC_IP=$(curl ifconfig.me && echo "")
-    sudo kubeadm init --control-plane-endpoint kube-master --apiserver-cert-extra-sans="$MASTER_PUBLIC_IP"   --pod-network-cidr="$POD_CIDR" --cri-socket unix:///var/run/containerd/containerd.sock --ignore-preflight-errors Swap
+    sudo kubeadm init --control-plane-endpoint="$MASTER_PUBLIC_IP" --apiserver-cert-extra-sans="$MASTER_PUBLIC_IP"   --pod-network-cidr="$POD_CIDR" --cri-socket unix:///var/run/containerd/containerd.sock --ignore-preflight-errors Swap
 
 else
     echo "Error: MASTER_PUBLIC_IP has an invalid value: $PUBLIC_IP_ACCESS"
