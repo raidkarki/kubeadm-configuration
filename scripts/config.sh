@@ -16,7 +16,7 @@ sudo swapoff -a
 sudo apt-get update -y
 
 
-# Install CRI-O Runtime
+# Install containerd Runtime
 
 OS="xUbuntu_20.04"
 
@@ -32,14 +32,15 @@ sudo modprobe overlay
 sudo modprobe br_netfilter
 
 # sysctl params required by setup, params persist across reboots
+
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-iptables  = 1
-net.bridge.bridge-nf-call-ip6tables = 1
-net.ipv4.ip_forward                 = 1
+net.ipv4.ip_forward = 1
 EOF
+
 
 # Apply sysctl params without reboot
 sudo sysctl --system
+
 #unistall previous docker
 for pkg in docker.io docker-doc docker-compose docker-compose-v2 containerd runc; do sudo apt-get remove $pkg; done
 
@@ -71,6 +72,7 @@ echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
 
 #install kubectl
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
 #test the version
 kubectl version --client
 
