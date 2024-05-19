@@ -6,7 +6,7 @@ set -euxo pipefail
 
 # Kuernetes Variable Declaration
 
-KUBERNETES_VERSION="1.30.0"
+
 
 # disable swap
 sudo swapoff -a
@@ -16,20 +16,11 @@ sudo swapoff -a
 sudo apt-get update -y
 
 
-# Install containerd Runtime
 
-OS="xUbuntu_20.04"
-
-VERSION="1.28"
 
 # Create the .conf file to load the modules at bootup
-cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
-overlay
-br_netfilter
-EOF
 
-sudo modprobe overlay
-sudo modprobe br_netfilter
+
 
 # sysctl params required by setup, params persist across reboots
 
@@ -63,19 +54,6 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 
 
 
-#Download the latest release with the command:
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-#validate the binary
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
-
-echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
-
-#install kubectl
-sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
-#test the version
-kubectl version --client
-
 sudo apt-get update
 # apt-transport-https may be a dummy package; if so, you can skip that package
 sudo apt-get install -y apt-transport-https ca-certificates curl gpg
@@ -84,10 +62,10 @@ sudo apt-get install -y apt-transport-https ca-certificates curl gpg
 sudo mkdir -p -m 755 /etc/apt/keyrings
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
+# This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
+
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 sudo apt-get update
-sudo apt-get install -y --allow-change-held-packages kubelet kubeadm
+sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
-
-sudo systemctl enable --now kubelet
