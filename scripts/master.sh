@@ -10,7 +10,7 @@ sudo kubeadm config images list
 sudo kubeadm config images pull
 
 
-PUBLIC_IP_ACCESS="true"
+PUBLIC_IP_ACCESS="false"
 NODENAME=$(hostname -s)
 POD_CIDR="10.244.0.0/16"
 
@@ -36,3 +36,9 @@ fi
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+
+
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
