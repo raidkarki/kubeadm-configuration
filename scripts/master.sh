@@ -12,7 +12,7 @@ sudo kubeadm config images pull
 
 PUBLIC_IP_ACCESS="false"
 NODENAME=$(hostname -s)
-POD_CIDR="10.244.0.0/16"
+POD_CIDR="192.168.0.0/16"
 
 
 #kubectl drain $NODENAME --delete-emptydir-data --force --ignore-daemonsets
