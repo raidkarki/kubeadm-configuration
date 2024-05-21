@@ -5,6 +5,17 @@
 set -euxo pipefail
 
 # Kuernetes Variable Declaration
+
+
+
+# disable swap
+sudo swapoff -a
+
+# keeps the swaf off during reboot
+(crontab -l 2>/dev/null; echo "@reboot /sbin/swapoff -a") | crontab - || true
+sudo apt-get update -y
+
+
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
 br_netfilter
